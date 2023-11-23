@@ -25,7 +25,7 @@ function listarPizzas($conn){
 }
 function listarPizzasPrecio($conn)
 {
-    listarPizzas($conn);
+    
     $consulta = $conn->prepare("SELECT nombre, precio FROM pizzas WHERE precio = :precio");
     $consulta->bindParam(':precio', $_POST["precio"]);
 
@@ -60,6 +60,7 @@ function listarPizzasPrecio($conn)
     
     echo "<h2>Coincidencias de precio</h2>";
     listarPizzasPrecio($conn);
+    listarPizzas($conn);
     ?>
 
 </body>
