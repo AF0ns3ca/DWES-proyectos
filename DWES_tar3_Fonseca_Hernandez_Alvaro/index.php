@@ -19,7 +19,7 @@ function comprobar_usuario($usuario, $clave)
     //Nos conectamos a la BD y lo igualamos a conn que sera donde se guarde la conexion
     $conn = conectarBD();
     //preparar la consulta
-    $consulta = $conn->prepare("SELECT usuario, nombre, rol FROM usuarios WHERE usuario =:usuario AND clave =:clave");
+    $consulta = $conn->prepare("SELECT id, usuario, nombre, rol FROM usuarios WHERE usuario =:usuario AND clave =:clave");
     $consulta->bindParam("usuario", $usuario);
     $consulta->bindParam("clave", $clave);
     //lanzar la consulta
@@ -28,7 +28,7 @@ function comprobar_usuario($usuario, $clave)
 
     if ($consulta->rowCount() > 0) {
         $row = $consulta->fetch(PDO::FETCH_ASSOC);
-        return array("usuario" => $row['usuario'], "nombre" => $row['nombre'], "rol" => $row['rol']);
+        return array("id"=>$row['id'], "usuario" => $row['usuario'], "nombre" => $row['nombre'], "rol" => $row['rol']);
     } else
         return FALSE;
 }
@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $usuario = $_POST["usuario"];
     } else {
         session_start();
+        $_SESSION['id'] = $usu['id'];
         $_SESSION['usuario'] = $_POST["usuario"];
         $_SESSION['nombre'] = $usu['nombre'];
         $_SESSION['rol'] = $usu['rol'];
