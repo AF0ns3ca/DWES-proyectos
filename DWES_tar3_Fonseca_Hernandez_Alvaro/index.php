@@ -28,7 +28,7 @@ function comprobar_usuario($usuario, $clave)
 
     if ($consulta->rowCount() > 0) {
         $row = $consulta->fetch(PDO::FETCH_ASSOC);
-        return array("id"=>$row['id'], "usuario" => $row['usuario'], "nombre" => $row['nombre'], "rol" => $row['rol']);
+        return array("id" => $row['id'], "usuario" => $row['usuario'], "nombre" => $row['nombre'], "rol" => $row['rol']);
     } else
         return FALSE;
 }
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $_SESSION['rol'] = $usu['rol'];
         if ($usu['rol'] == '1') {
             header("Location: zona_admin.php");
-        } else if($usu['rol'] == '2'){
+        } else if ($usu['rol'] == '2') {
             header("Location: pedido.php");
         }
     }
@@ -59,23 +59,37 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style-index.css">
     <title>PHPizza</title>
 </head>
 
 <body>
-    <?php
-    if (isset($err)) {
-        echo "<p>usuario o contraseña incorrectos</p>";
-    }
-    ?>
-    <a href="nuevo_usuario.php">¿No tienes cuenta? Registrate</a>
-    <form action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?> method="POST">
-        <input value="<?php if (isset($usuario))
-                            echo $usuario; ?>" name="usuario">
-        <input type="password" name="clave"> <!-- Este tipo nos permite que salgan puntitos para que no se vea -->
-        <button action="submit">Enviar</button>
-    </form>
-    
+    <div class="container">
+        <div class="wrapper">
+            <h1>Iniciar Sesion</h1>
+
+            <?php
+            if (isset($err)) {
+                echo "<p class='incorrect'>usuario o contraseña incorrectos</p>";
+            }
+            ?>
+
+            <form action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?> method="POST">
+                <div>
+                    <label for="usuario">Usuario: </label>
+                    <input value="<?php if (isset($usuario)) echo $usuario; ?>" name="usuario" placeholder="Usuario...">
+                </div>
+                <div>
+                    <label for="clave">Contraseña: </label>
+                    <input type="password" name="clave" placeholder="Contraseña..."> <!-- Este tipo nos permite que salgan puntitos para que no se vea -->
+                </div>
+
+                <button action="submit">Enviar</button>
+            </form>
+            <a href="nuevo_usuario.php">¿No tienes cuenta? Registrate</a>
+        </div>
+    </div>
+
 </body>
 
 </html>

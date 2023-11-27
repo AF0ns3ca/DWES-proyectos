@@ -49,75 +49,7 @@ function listarPizzas($conn)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-image: url('./assets/wallpaper.jpg');
-        }
-
-        .container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .wrapper {
-            width: 60%;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #f4f4f4;
-            border-radius: 5px;
-        }
-
-        .table {
-            align-items: center;
-        }
-
-        table {
-            border-collapse: collapse;
-        }
-
-        th {
-            padding: 5px;
-        }
-
-        button {
-            width: auto;
-            margin: 10px;
-        }
-
-        .pedido {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .pizzas-pedido {
-            width: 100%;
-            display: flex;
-            flex-direction: row;
-            gap: 5px;
-        }
-
-        .hide {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="css/styles-pedido.css">
     <title>Pagina de <?php echo $_SESSION['nombre'] ?></title>
 </head>
 
@@ -160,14 +92,7 @@ function listarPizzas($conn)
             </div>
         </div>
     </div>
-    <script>
-        btnPedido = document.getElementById('pedido');
-        formPedido = document.getElementById('form-pedido');
-        btnPedido.addEventListener('click', function() {
-            formPedido.classList.toggle('hide');
-            btnPedido.classList.toggle('hide');
-        });
-    </script>
+    <script src="js/pedido.js"></script>
 </body>
 
 </html>
