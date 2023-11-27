@@ -5,8 +5,12 @@
 }
 
 body {
-  background-image: url("../assets/wallpaper.jpg");
-}
+    background-image: url("../assets/wallpaper.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
 
 .container {
   width: 100%;

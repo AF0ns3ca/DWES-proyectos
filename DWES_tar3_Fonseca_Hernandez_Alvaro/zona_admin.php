@@ -43,15 +43,21 @@ function listarPizzas($conn)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style-admin.css">
     <title>Administrador <?php echo $_SESSION['nombre'] ?></title>
 </head>
 
 <body>
-    <h1>Bienvenido, <?php echo $_SESSION['nombre'] ?></h1>
-    <?php
-    echo "<h1>Listado de Pizzas</h1>";
-    listarPizzas($conn);
-    ?>
+    <div class="container">
+        <div class="wrapper">
+            <h1>Bienvenido, <?php echo $_SESSION['nombre'] ?></h1>
+            <?php
+            echo "<h1>Listado de Pizzas</h1>";
+            listarPizzas($conn);
+            ?>
+        </div>
+    </div>
+
 </body>
 
 </html>
