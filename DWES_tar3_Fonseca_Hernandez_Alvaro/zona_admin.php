@@ -22,18 +22,39 @@ $conn = conectarBD();
 
 function listarPizzas($conn)
 {
-    $consulta = $conn->prepare("SELECT nombre, ingredientes, precio FROM pizzas");
+    $consulta = $conn->prepare("SELECT id, nombre, ingredientes, precio FROM pizzas");
     $consulta->execute();
     echo "<table border='1'>";
     echo "<tr><th>Pizza</th><th>Ingredientes</th><th>Precio</th><th>Acciones Admin</th></tr>";
     foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
         echo "<tr>";
         echo "<td>$row[nombre]</td><td>$row[ingredientes]</td><td> $row[precio]€</td>";
-        echo "<td><button class='edit-btn'>Editar</button>";
-        echo "<button class='delete-btn'>Borrar</button></td>";
+        echo "<td class='action-btn'><button class='edit-btn'>Editar</button>";
+        echo "<a href=". htmlspecialchars($_SERVER["PHP_SELF"]) . "?borrarPizza=" . $row["id"] . "id='delete-btn' class='delete-btn'>Borrar</a></td>";
         echo "</tr>";
     }
     echo "</table>";
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $consulta = $conn->prepare("INSERT INTO pizzas (nombre, coste, precio, ingredientes) VALUES (:nombre, :coste, :precio, :ingredientes)");
+    $consulta->bindParam(':nombre', $_POST['nombre']);
+    $consulta->bindParam(':coste', $_POST['coste']);
+    $consulta->bindParam(':precio', $_POST['precio']);
+    $consulta->bindParam(':ingredientes', $_POST['ingredientes']);
+    $consulta->execute();
+}
+
+function borrarPizza($conn, $id){
+    $consulta = $conn->prepare('DELETE FROM pizzas WHERE id = :id');
+    $consulta->bindParam(':id', $id);
+    $consulta->execute();
+}
+
+// Lógica para eliminar pizza
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['borrarPizza'])) {
+    $id = $_GET['borrarPizza'];
+    borrarPizza($conn, $id);
 }
 ?>
 
@@ -43,7 +64,7 @@ function listarPizzas($conn)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style-admin.css">
+    <link rel="stylesheet" href="css/style-admin.css" type="text/css">
     <title>Administrador <?php echo $_SESSION['nombre'] ?></title>
 </head>
 
@@ -52,12 +73,35 @@ function listarPizzas($conn)
         <div class="wrapper">
             <h1>Bienvenido, <?php echo $_SESSION['nombre'] ?></h1>
             <?php
+            echo "<div class='head-admin'>";
             echo "<h1>Listado de Pizzas</h1>";
+            echo "<button id='btn-add-pizza'>Añadir Pizza</button>";
+            echo "</div>";
             listarPizzas($conn);
             ?>
+            <form method="POST">
+                <div>
+                    <label for="nombre">Introduzca nombre:</label>
+                    <input type="text" name="nombre">
+                </div>
+                <div>
+                    <label for="coste">Introduzca coste:</label>
+                    <input type="text" name="coste">
+                </div>
+                <div>
+                    <label for="precio">Introduzca precio:</label>
+                    <input type="text" name="precio">
+                </div>
+                <div>
+                    <label for="ingredientes">Introduzca ingredientes:</label>
+                    <input type="text" name="ingredientes">
+                </div>
+                <button action="submit">Enviar</button>
+            </form>
+
         </div>
     </div>
-
+    <script src="js/admin.js"></script>
 </body>
 
 </html>
