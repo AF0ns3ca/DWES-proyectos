@@ -32,8 +32,8 @@ function listarPizzas($conn)
     echo "</table>";
 }
 
-// function pedido($conn){
-//     $hoy = getdate();
+// function pedido($conn, $detalle_pedido, $total){
+//     $hoy = date("Y-m-d H:i:s");
 //     $consulta = $conn->prepare("INSERT INTO pedidos id_cliente, fecha_pedido, detalle_pedido, total VALUES id_cliente=:id_cliente, fecha_pedido=:fecha_pedido, detalle_pedido=:detalle_pedido, total=:total");
 //     $consulta->bindParam("id_cliente", $_SESSION['id']);
 //     $consulta->bindParam("fecha_pedido", $hoy);
@@ -41,7 +41,88 @@ function listarPizzas($conn)
 //     $consulta->bindParam("total", $total);
 //     $consulta->execute();
 // }
+
+// //Logica para añadir pedidos
+// if (isset($_POST["pizzas"]) && isset($_POST["cantidades"])) {
+//     $detalle_pedido = "";
+//     $total = 0;
+
+//     $pizzas = $_POST["pizzas"];
+//     $cantidades = $_POST["cantidades"];
+
+//     // Verificar que las arrays tengan la misma longitud
+//     if (count($pizzas) === count($cantidades)) {
+//         foreach ($pizzas as $key => $pizza_id) {
+//             $consulta = $conn->prepare("SELECT id, precio FROM pizzas WHERE id = :id");
+//             $consulta->bindParam(":id", $pizza_id);
+//             $consulta->execute();
+//             $row = $consulta->fetch(PDO::FETCH_ASSOC);
+
+//             // Detalle pedido: id_pizza x cantidad
+//             $detalle_pedido .= $row["id"] . "x" . $cantidades[$key] . ", ";
+//             $total += $row["precio"] * $cantidades[$key];
+//         }
+
+//         // Eliminar la última coma y espacio en blanco
+//         $detalle_pedido = rtrim($detalle_pedido, ", ");
+
+//         pedido($conn, $detalle_pedido, $total);
+//         header("Location: gracias.php");
+//     } else {
+//         echo "Error al procesar pedido.";
+//     }
+// }
+// FUNCIÓN PARA AGREGAR PIZZAS A PEDIDOS
+function pedido($conn, $id_cliente, $fecha_pedido, $detalle_pedido, $total)
+{
+    try {
+        $consulta = $conn->prepare("INSERT INTO pedidos (id_cliente, fecha_pedido, detalle_pedido, total) VALUES (:id_cliente, :fecha_pedido, :detalle_pedido, :total)");
+        $consulta->bindParam(":id_cliente", $id_cliente);
+        $consulta->bindParam(":fecha_pedido", $fecha_pedido);
+        $consulta->bindParam(":detalle_pedido", $detalle_pedido);
+        $consulta->bindParam(":total", $total);
+        $consulta->execute();
+        header("Location: gracias.php");
+    } catch (Exception $e) {
+        echo "Error al agregar el pedido: " . $e->getMessage();
+    }
+}
+
+// Lógica para agregar pedido
+if (isset($_POST["pizza"]) && isset($_POST["cantidades"])) {
+    $id_cliente = $_SESSION["id"];
+    $fecha_pedido = date("Y-m-d H:i:s");
+    $detalle_pedido = "";
+    $total = 0;
+
+    $pizzas = $_POST["pizza"];
+    $cantidades = $_POST["cantidades"];
+
+    // Verificar que las arrays tengan la misma longitud
+    if (count($pizzas) === count($cantidades)) {
+        foreach ($pizzas as $key => $pizza_id) {
+            $consulta = $conn->prepare("SELECT id, precio FROM pizzas WHERE id = :id");
+            $consulta->bindParam(":id", $pizza_id);
+            $consulta->execute();
+            $row = $consulta->fetch(PDO::FETCH_ASSOC);
+
+            // Detalle pedido: id_pizza x cantidad
+            $detalle_pedido .= $row["id"] . "x" . $cantidades[$key] . ", ";
+            $total += $row["precio"] * $cantidades[$key];
+        }
+
+        // Eliminar la última coma y espacio en blanco
+        $detalle_pedido = rtrim($detalle_pedido, ", ");
+
+        pedido($conn, $id_cliente, $fecha_pedido, $detalle_pedido, $total);
+        header("Location: gracias.php");
+    } else {
+        echo "Error al procesar pedido.";
+    }
+}
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -67,25 +148,27 @@ function listarPizzas($conn)
             <div>
                 <button id="pedido">Realizar Pedido</button>
             </div>
-            <div class="pedido hide" id="form-pedido">
-                <form method="POST">
-                    <div class="pizzas-pedido">
-                        <label for="pizza">Seleccione una pizza</label>
-                        <select name="pizza">
-                            <option value="0">Seleccione una pizza</option>
-                            <?php
-                            $consulta = $conn->prepare("SELECT nombre FROM pizzas");
-                            $consulta->execute();
-                            foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                                echo "<option value=" . $row["nombre"] . ">" . $row['nombre'] . "</option>";
-                            }
-                            ?>
+            <div class="pedido hide" id="hide-pedido">
+                <form method="POST" id="form-pedido">
+                    <div id="pizzas-a-pedir">
+                        <div class="pizzas-pedido">
+                            <select name="pizza[]" class="select-pizza">
+                                <option value="0">Seleccione una pizza</option>
+                                <?php
+                                $consulta = $conn->prepare("SELECT id, nombre FROM pizzas");
+                                $consulta->execute();
+                                foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                                    echo "<option value=" . $row["id"] . ">" . $row['nombre'] . "</option>";
+                                }
+                                ?>
+                            </select>
                             <label for="cantidad"></label>
-                            <input type="number">
+                            <input type="number" min="1" value="1" name="cantidades[]">
+                        </div>
                     </div>
-                    </select>
                     <button action="submit">Añadir a pedido</button>
                 </form>
+                <button id="add-pizza-pedido">Agregar pizza</button>
             </div>
             <div class="resumen-pedido">
                 <p>Resumen de tu pedido, <?php echo $_SESSION['nombre'] ?></p>

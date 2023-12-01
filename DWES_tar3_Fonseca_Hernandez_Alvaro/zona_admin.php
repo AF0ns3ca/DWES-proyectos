@@ -29,8 +29,8 @@ function listarPizzas($conn)
     foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
         echo "<tr>";
         echo "<td>$row[nombre]</td><td>$row[ingredientes]</td><td> $row[precio]€</td>";
-        echo "<td class='action-btn'><button class='edit-btn'>Editar</button>";
-        echo "<a href=". htmlspecialchars($_SERVER["PHP_SELF"]) . "?borrarPizza=" . $row["id"] . "id='delete-btn' class='delete-btn'>Borrar</a></td>";
+        echo "<td class='action-btn'><div class='enlace'><a class='edit-btn'>Editar</a></div>";
+        echo "<div class='enlace'><a href=" . htmlspecialchars($_SERVER["PHP_SELF"]) . "?borrarPizza=" . $row["id"] . "id='delete-btn' class='delete-btn'>Borrar</a></div></td>";
         echo "</tr>";
     }
     echo "</table>";
@@ -45,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $consulta->execute();
 }
 
-function borrarPizza($conn, $id){
+function borrarPizza($conn, $id)
+{
     $consulta = $conn->prepare('DELETE FROM pizzas WHERE id = :id');
     $consulta->bindParam(':id', $id);
     $consulta->execute();
@@ -54,6 +55,7 @@ function borrarPizza($conn, $id){
 // Lógica para eliminar pizza
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['borrarPizza'])) {
     $id = $_GET['borrarPizza'];
+
     borrarPizza($conn, $id);
 }
 ?>
@@ -75,30 +77,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['borrarPizza'])) {
             <?php
             echo "<div class='head-admin'>";
             echo "<h1>Listado de Pizzas</h1>";
-            echo "<button id='btn-add-pizza'>Añadir Pizza</button>";
-            echo "</div>";
-            listarPizzas($conn);
             ?>
-            <form method="POST">
-                <div>
-                    <label for="nombre">Introduzca nombre:</label>
-                    <input type="text" name="nombre">
-                </div>
-                <div>
-                    <label for="coste">Introduzca coste:</label>
-                    <input type="text" name="coste">
-                </div>
-                <div>
-                    <label for="precio">Introduzca precio:</label>
-                    <input type="text" name="precio">
-                </div>
-                <div>
-                    <label for="ingredientes">Introduzca ingredientes:</label>
-                    <input type="text" name="ingredientes">
-                </div>
-                <button action="submit">Enviar</button>
-            </form>
-
+            <button id='btn-add-pizza'>Añadir Pizza</button>
+            <?php
+            echo "</div>";
+            listarPizzas($conn);    
+            ?>
+            <div id="formulario-admin" class="formulario-admin hidden">
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="nombre">Introduzca nombre:</label>
+                        <input type="text" name="nombre">
+                    </div>
+                    <div class="form-group">
+                        <label for="coste">Introduzca coste:</label>
+                        <input type="text" name="coste">
+                    </div>
+                    <div class="form-group">
+                        <label for="precio">Introduzca precio:</label>
+                        <input type="text" name="precio">
+                    </div>
+                    <div class="form-group">
+                        <label for="ingredientes">Introduzca ingredientes:</label>
+                        <input type="text" name="ingredientes">
+                    </div>
+                    <button action="submit">Enviar</button>
+                </form>
+            </div>
         </div>
     </div>
     <script src="js/admin.js"></script>
