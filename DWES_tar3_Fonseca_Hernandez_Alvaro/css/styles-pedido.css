@@ -6,14 +6,14 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  }
+}
 
 .container {
   width: 100%;
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: red;
 }
 
 h1 {
@@ -21,22 +21,14 @@ h1 {
 }
 
 .wrapper {
-  width: 60%;
-  height: 100vh;
-  text-align: center;
+  width: 100%;
+  background-color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f4f4f4;
-  border-radius: 5px;
-  -webkit-box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.62);
-  -moz-box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.62);
-  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.62);
-}
-
-.header {
-  align-items: center;
+  padding: 10px;
+  background-color: green;
 }
 
 table {
@@ -48,34 +40,14 @@ tr,
 td {
   padding: 5px;
 }
-
-button {
-  width: auto;
-  margin: 10px;
-}
-
-.pedido {
+.resumen-pedido {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.pizzas-pedido {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
+  margin: 10px;
 }
 
 .hide {
   display: none;
-}
-
-.resumen-pedido{
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 10px;
 }

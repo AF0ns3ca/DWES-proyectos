@@ -1,10 +1,23 @@
 <?php
-include_once "conexionDB.php";
 session_start();
 if (!isset($_SESSION["usuario"])) {
     header("Location: index.php?redirigido=true");
 }
 
+function conectarBD()
+{
+    //Funcion ue nos conecta a la base de datos, tenemos que mandarle la direccion ip del host, el usuario, la clave y el nombre de la BD
+    $cadena_conexion = 'mysql:dbname=dwes_t3;host=127.0.0.1';
+    $usuario = "root";
+    $clave = "";
+    try {
+        //Se crea el objeto de conexion a la base de datos y se devueve
+        $bd = new PDO($cadena_conexion, $usuario, $clave);
+        return $bd;
+    } catch (PDOException $e) {
+        echo "Error conectar BD: " . $e->getMessage();
+    }
+}
 $conn = conectarBD();
 
 function listarPizzas($conn)
@@ -48,13 +61,13 @@ if (isset($_POST["pizza"]) && isset($_POST["cantidades"])) {
     // Verificar que las arrays tengan la misma longitud
     if (count($pizzas) === count($cantidades)) {
         foreach ($pizzas as $key => $pizza_id) {
-            $consulta = $conn->prepare("SELECT id, precio FROM pizzas WHERE id = :id");
+            $consulta = $conn->prepare("SELECT id, nombre, precio FROM pizzas WHERE id = :id");
             $consulta->bindParam(":id", $pizza_id);
             $consulta->execute();
             $row = $consulta->fetch(PDO::FETCH_ASSOC);
 
             // Detalle pedido: id_pizza x cantidad
-            $detalle_pedido .= $row["id"] . "x" . $cantidades[$key] . ", ";
+            $detalle_pedido .= $row["nombre"] . " [" . $cantidades[$key] . " uds], ";
             $total += $row["precio"] * $cantidades[$key];
         }
 
@@ -67,7 +80,6 @@ if (isset($_POST["pizza"]) && isset($_POST["cantidades"])) {
         echo "Error al procesar pedido.";
     }
 }
-
 function cerrarSesion()
 {
     session_unset();
@@ -90,7 +102,9 @@ if (isset($_GET["cerrar_sesion"])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles-pedido.css">
-    <title>Pagina de <?php echo $_SESSION['nombre'] ?></title>
+    <title>Pagina de
+        <?php echo $_SESSION['nombre'] ?>
+    </title>
 </head>
 
 <body>
@@ -99,7 +113,7 @@ if (isset($_GET["cerrar_sesion"])) {
             <div class="header">
                 <?php
                 echo "<h1>Bienvenido, $_SESSION[nombre]</h1>";
-                echo "<a href='pedido.php?cerrar_sesion=true'>Cerrar Sesion</a>";
+                echo "<a class='close-sesion' href='pedido.php?cerrar_sesion=true'>Cerrar Sesion</a>";
                 echo "<h2>Estas son nuestras pizzas:</h2><br>";
                 listarPizzas($conn);
                 ?>
@@ -110,28 +124,34 @@ if (isset($_GET["cerrar_sesion"])) {
             </div>
             <div class="pedido hide" id="hide-pedido">
                 <form method="POST" id="form-pedido">
-                    <div id="pizzas-a-pedir">
-                        <div class="pizzas-pedido">
-                            <select name="pizza[]" class="select-pizza">
-                                <option value="0">Seleccione una pizza</option>
-                                <?php
-                                $consulta = $conn->prepare("SELECT id, nombre FROM pizzas");
-                                $consulta->execute();
-                                foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                                    echo "<option value=" . $row["id"] . ">" . $row['nombre'] . "</option>";
-                                }
-                                ?>
-                            </select>
-                            <label for="cantidad"></label>
-                            <input type="number" min="1" value="1" name="cantidades[]">
+                    <div>
+                        <div id="pizzas-a-pedir">
+                            <div class="pizzas-pedido">
+                                <select name="pizza[]" class="select-pizza">
+                                    <option value="0">Seleccione una pizza</option>
+                                    <?php
+                                    $consulta = $conn->prepare("SELECT id, nombre FROM pizzas");
+                                    $consulta->execute();
+                                    foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                                        echo "<option value=" . $row["id"] . ">" . $row['nombre'] . "</option>";
+                                    }
+                                    ?>
+                                </select>
+                                <label for="cantidad"></label>
+                                <input type="number" min="1" value="1" name="cantidades[]">
+                            </div>
                         </div>
+
+                        <button type="button" id="add-pizza-pedido">Agregar pizza</button>
                     </div>
                     <button action="submit">Añadir a pedido</button>
+                    <button type="button" id="cancel-btn" onclick="cancelar()">Cancelar</button>
                 </form>
-                <button id="add-pizza-pedido">Agregar pizza</button>
             </div>
             <div class="resumen-pedido">
-                <p>Resumen de tu pedido, <?php echo $_SESSION['nombre'] ?></p>
+                <p>Tus ultimos pedidos,
+                    <?php echo $_SESSION['nombre'] ?>
+                </p>
             </div>
         </div>
     </div>
