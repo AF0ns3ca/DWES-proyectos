@@ -1,23 +1,10 @@
 <?php
+include_once "conexionDB.php";
 session_start();
 if (!isset($_SESSION["usuario"])) {
     header("Location: index.php?redirigido=true");
 }
 
-function conectarBD()
-{
-    //Funcion ue nos conecta a la base de datos, tenemos que mandarle la direccion ip del host, el usuario, la clave y el nombre de la BD
-    $cadena_conexion = 'mysql:dbname=dwes_t3;host=127.0.0.1';
-    $usuario = "root";
-    $clave = "";
-    try {
-        //Se crea el objeto de conexion a la base de datos y se devueve
-        $bd = new PDO($cadena_conexion, $usuario, $clave);
-        return $bd;
-    } catch (PDOException $e) {
-        echo "Error conectar BD: " . $e->getMessage();
-    }
-}
 $conn = conectarBD();
 
 function listarPizzas($conn)
@@ -32,46 +19,6 @@ function listarPizzas($conn)
     echo "</table>";
 }
 
-// function pedido($conn, $detalle_pedido, $total){
-//     $hoy = date("Y-m-d H:i:s");
-//     $consulta = $conn->prepare("INSERT INTO pedidos id_cliente, fecha_pedido, detalle_pedido, total VALUES id_cliente=:id_cliente, fecha_pedido=:fecha_pedido, detalle_pedido=:detalle_pedido, total=:total");
-//     $consulta->bindParam("id_cliente", $_SESSION['id']);
-//     $consulta->bindParam("fecha_pedido", $hoy);
-//     $consulta->bindParam("detalle_pedido", $detalle_pedido);
-//     $consulta->bindParam("total", $total);
-//     $consulta->execute();
-// }
-
-// //Logica para añadir pedidos
-// if (isset($_POST["pizzas"]) && isset($_POST["cantidades"])) {
-//     $detalle_pedido = "";
-//     $total = 0;
-
-//     $pizzas = $_POST["pizzas"];
-//     $cantidades = $_POST["cantidades"];
-
-//     // Verificar que las arrays tengan la misma longitud
-//     if (count($pizzas) === count($cantidades)) {
-//         foreach ($pizzas as $key => $pizza_id) {
-//             $consulta = $conn->prepare("SELECT id, precio FROM pizzas WHERE id = :id");
-//             $consulta->bindParam(":id", $pizza_id);
-//             $consulta->execute();
-//             $row = $consulta->fetch(PDO::FETCH_ASSOC);
-
-//             // Detalle pedido: id_pizza x cantidad
-//             $detalle_pedido .= $row["id"] . "x" . $cantidades[$key] . ", ";
-//             $total += $row["precio"] * $cantidades[$key];
-//         }
-
-//         // Eliminar la última coma y espacio en blanco
-//         $detalle_pedido = rtrim($detalle_pedido, ", ");
-
-//         pedido($conn, $detalle_pedido, $total);
-//         header("Location: gracias.php");
-//     } else {
-//         echo "Error al procesar pedido.";
-//     }
-// }
 // FUNCIÓN PARA AGREGAR PIZZAS A PEDIDOS
 function pedido($conn, $id_cliente, $fecha_pedido, $detalle_pedido, $total)
 {
@@ -120,6 +67,18 @@ if (isset($_POST["pizza"]) && isset($_POST["cantidades"])) {
         echo "Error al procesar pedido.";
     }
 }
+
+function cerrarSesion()
+{
+    session_unset();
+    session_destroy();
+    header("Location: index.php");
+}
+
+// Lógica para cerrar sesion
+if (isset($_GET["cerrar_sesion"])) {
+    cerrarSesion();
+}
 ?>
 
 
@@ -137,9 +96,10 @@ if (isset($_POST["pizza"]) && isset($_POST["cantidades"])) {
 <body>
     <div class="container">
         <div class="wrapper">
-            <div class="table">
+            <div class="header">
                 <?php
                 echo "<h1>Bienvenido, $_SESSION[nombre]</h1>";
+                echo "<a href='pedido.php?cerrar_sesion=true'>Cerrar Sesion</a>";
                 echo "<h2>Estas son nuestras pizzas:</h2><br>";
                 listarPizzas($conn);
                 ?>

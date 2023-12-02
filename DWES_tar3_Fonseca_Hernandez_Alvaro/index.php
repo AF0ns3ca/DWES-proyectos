@@ -1,18 +1,5 @@
 <?php
-function conectarBD()
-{
-    //Funcion ue nos conecta a la base de datos, tenemos que mandarle la direccion ip del host, el usuario, la clave y el nombre de la BD
-    $cadena_conexion = 'mysql:dbname=dwes_t3;host=127.0.0.1';
-    $usuario = "root";
-    $clave = "";
-    try {
-        //Se crea el objeto de conexion a la base de datos y se devueve
-        $bd = new PDO($cadena_conexion, $usuario, $clave);
-        return $bd;
-    } catch (PDOException $e) {
-        echo "Error conectar BD: " . $e->getMessage();
-    }
-}
+include_once "conexionDB.php";
 
 function comprobar_usuario($usuario, $clave)
 {
@@ -66,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <body>
     <div class="container">
         <div class="wrapper">
+            <img src="assets/imgs/logo.png" alt="">
             <h1>Iniciar Sesion</h1>
 
             <?php
