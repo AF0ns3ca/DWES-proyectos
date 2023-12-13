@@ -1,9 +1,9 @@
 <?php
 session_start();
 if (!isset($_SESSION["usuario"])) {
-    header("Location: index.php?redirigido=true");
+    header("Location: ../index.php?redirigido=true");
 }
-include_once "conexionDB.php";
+include_once "../conexionDB.php";
 $conn = conectarBD();
 
 function listarPizzas($conn)
@@ -71,7 +71,7 @@ function cerrarSesion()
 {
     session_unset();
     session_destroy();
-    header("Location: index.php");
+    header("Location: ../index.php");
 }
 
 // Lógica para cerrar sesion
@@ -86,7 +86,8 @@ if (isset($_GET["cerrar_sesion"])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style-admin.css" type="text/css">
+    <link rel="stylesheet" href="../css/style-admin.css" type="text/css">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <title>Administrador
         <?php echo $_SESSION['nombre'] ?>
     </title>
@@ -95,11 +96,22 @@ if (isset($_GET["cerrar_sesion"])) {
 <body>
     <div class="container">
         <div class="wrapper">
-            <div class="header">
-                <h1>Bienvenido,
-                    <?php echo $_SESSION['nombre'] ?>
-                </h1>
-            </div>
+            <nav>
+                <div class="header">
+                    <img src="../assets/imgs/logo.png" alt="">
+                    <h1>
+                        <?php echo $_SESSION['nombre'] ?>
+                    </h1>
+                </div>
+                <div class="btns">
+                    <ul>
+                        <li><button id='btn-add-pizza' class="btn-add-pizza">Añadir Pizza</button></li>
+                        <li>
+                            <?php echo "<a class='close-sesion' href='pedido.php?cerrar_sesion=true'>Cerrar Sesion</a>" ?>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
 
             <?php
             echo "<div class='head-admin'>";
@@ -107,15 +119,15 @@ if (isset($_GET["cerrar_sesion"])) {
             echo "<div class='head-btns'>"
                 ?>
 
-            <button id='btn-add-pizza' class="btn-add-pizza">Añadir Pizza</button>
+
             <?php
-            echo "<a class='close-sesion' href='pedido.php?cerrar_sesion=true'>Cerrar Sesion</a>";
+            ;
             echo "</div></div>";
             listarPizzas($conn);
             ?>
-            
+
             <div id="formulario-admin" class="formulario-admin hidden">
-            <h2>Editar Inventario</h2>
+                <h2>Editar Inventario</h2>
                 <form id="formulario" method="POST">
                     <input type="hidden" name="accion" id="accion" value="add">
                     <input type="hidden" name="id" id="id" value="">
@@ -144,7 +156,7 @@ if (isset($_GET["cerrar_sesion"])) {
             </div>
         </div>
     </div>
-    <script src="js/admin.js"></script>
+    <script src="../js/admin.js"></script>
 </body>
 
 </html>

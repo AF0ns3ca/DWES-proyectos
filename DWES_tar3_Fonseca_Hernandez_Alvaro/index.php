@@ -32,9 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $_SESSION['nombre'] = $usu['nombre'];
         $_SESSION['rol'] = $usu['rol'];
         if ($usu['rol'] == '1') {
-            header("Location: zona_admin.php");
+            header("Location: ./templates/zona_admin.php");
         } else if ($usu['rol'] == '2') {
-            header("Location: pedido.php");
+            header("Location: ./templates/pedido.php");
         }
     }
 }
@@ -47,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style-index.css" type="text/css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <title>PHPizza</title>
 </head>
 
@@ -74,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
                 <button action="submit">Enviar</button>
             </form>
-            <a href="nuevo_usuario.php">¿No tienes cuenta? Registrate</a>
+            <a href="./templates/nuevo_usuario.php">¿No tienes cuenta? Registrate</a>
         </div>
     </div>
 

@@ -1,5 +1,5 @@
 <?php
-include_once "conexionDB.php";
+include_once "../conexionDB.php";
 
 $conn = conectarBD();
 //Esto hace que no se ejecute esto hasta que haya algo del post
@@ -33,15 +33,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style-registro.css" type="text/css">
+    <link rel="stylesheet" href="../css/style-registro.css" type="text/css">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <title>Registro</title>
 </head>
 
 <body>
     <div class="container">
         <div class="wrapper">
+        <img src="../assets/imgs/logo.png" alt="">
             <h1>REGISTRO</h1>
-            <a href="index.php">¿Ya tienes cuenta? Inicia Sesion</a>
+            <a href="../index.php">¿Ya tienes cuenta? Inicia Sesion</a>
             <?php
             if (isset($err)) {
                 echo "<p class='incorrect'>No puede haber campos vacios</p>";

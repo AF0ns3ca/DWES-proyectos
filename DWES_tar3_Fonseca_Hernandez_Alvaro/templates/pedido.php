@@ -1,23 +1,10 @@
 <?php
 session_start();
 if (!isset($_SESSION["usuario"])) {
-    header("Location: index.php?redirigido=true");
+    header("Location: ../index.php?redirigido=true");
 }
 
-function conectarBD()
-{
-    //Funcion ue nos conecta a la base de datos, tenemos que mandarle la direccion ip del host, el usuario, la clave y el nombre de la BD
-    $cadena_conexion = 'mysql:dbname=dwes_t3;host=127.0.0.1';
-    $usuario = "root";
-    $clave = "";
-    try {
-        //Se crea el objeto de conexion a la base de datos y se devueve
-        $bd = new PDO($cadena_conexion, $usuario, $clave);
-        return $bd;
-    } catch (PDOException $e) {
-        echo "Error conectar BD: " . $e->getMessage();
-    }
-}
+include_once "../conexionDB.php";
 $conn = conectarBD();
 
 function listarPizzas($conn)
@@ -30,6 +17,42 @@ function listarPizzas($conn)
         echo "<tr><td>$row[nombre]</td><td>$row[ingredientes]</td><td> $row[precio]€</td></tr>";
     }
     echo "</table>";
+}
+
+function pizzasMasCompradas($conn)
+{
+    $consulta = $conn->prepare("SELECT p.nombre AS nombre_pizza, COUNT(*) AS cantidad_pedidos
+    FROM pizzas p
+    JOIN pedidos pe ON pe.detalle_pedido LIKE CONCAT('%', p.nombre, '%')
+    GROUP BY p.nombre
+    LIMIT 4");
+
+    $consulta->execute();
+    echo "<table border='1'>";
+    echo "<tr><th>Pizza</th><th>Cantidad de pedidos</th></tr>";
+    foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        echo "<tr><td>$row[nombre_pizza]</td><td>$row[cantidad_pedidos]</td></tr>";
+    }
+    echo "</table>";
+
+}
+
+function ultimosPedidos($conn){
+    $consulta = $conn->prepare("SELECT pe.fecha_pedido, pe.detalle_pedido, pe.total
+    FROM pedidos pe
+    WHERE pe.id_cliente = :id_cliente
+    ORDER BY pe.fecha_pedido DESC
+    LIMIT 3");
+
+    $consulta->bindParam(":id_cliente", $_SESSION["id"]);
+    $consulta->execute();
+    echo "<table border='1'>";
+    echo "<tr><th>Fecha</th><th>Detalle</th><th>Total</th></tr>";
+    foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        echo "<tr><td>$row[fecha_pedido]</td><td>$row[detalle_pedido]</td><td>$row[total]</td></tr>";
+    }
+    echo "</table>";
+
 }
 
 // FUNCIÓN PARA AGREGAR PIZZAS A PEDIDOS
@@ -84,7 +107,7 @@ function cerrarSesion()
 {
     session_unset();
     session_destroy();
-    header("Location: index.php");
+    header("Location: ../index.php");
 }
 
 // Lógica para cerrar sesion
@@ -101,7 +124,8 @@ if (isset($_GET["cerrar_sesion"])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles-pedido.css">
+    <link rel="stylesheet" href="../css/styles-pedido.css">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <title>Pagina de
         <?php echo $_SESSION['nombre'] ?>
     </title>
@@ -110,18 +134,42 @@ if (isset($_GET["cerrar_sesion"])) {
 <body>
     <div class="container">
         <div class="wrapper">
-            <div class="header">
-                <?php
-                echo "<h1>Bienvenido, $_SESSION[nombre]</h1>";
-                echo "<a class='close-sesion' href='pedido.php?cerrar_sesion=true'>Cerrar Sesion</a>";
-                echo "<h2>Estas son nuestras pizzas:</h2><br>";
-                listarPizzas($conn);
-                ?>
+            <nav>
+                <div class="header">
+                    <img src="../assets/imgs/logo.png" alt="">
+                    <h1>
+                        Bienvenido,
+                        <?php echo $_SESSION['nombre'] ?>
+                    </h1>
+                </div>
+                <div class="btns">
+                    <ul>
+                        <li><button class="btn-pedido" id="pedido">Realizar Pedido</button></li>
+                        <li>
+                            <?php echo "<a class='close-sesion' href='pedido.php?cerrar_sesion=true'>Cerrar Sesion</a>"; ?>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class='head-admin'>
+                <img class='banner' src='../assets/imgs/banner.jpg' alt='banner-pizzeria'>
+                <div class="user-stadistic">
+                    <h1>Las más famosas</h1>
+                    <?php pizzasMasCompradas($conn) ?>
+                    <h2>Tus ultimos pedidos,
+                                <?php echo $_SESSION['nombre'] ?>
+                            </h2>
+                            <?php ultimosPedidos($conn) ?>
+                    
+                </div>
+
+            </div>
+            <div class='table-pizzas'>
+                <?php listarPizzas($conn); ?>
             </div>
 
-            <div>
-                <button id="pedido">Realizar Pedido</button>
-            </div>
+
             <div class="pedido hide" id="hide-pedido">
                 <form method="POST" id="form-pedido">
                     <div>
@@ -148,14 +196,14 @@ if (isset($_GET["cerrar_sesion"])) {
                     <button type="button" id="cancel-btn" onclick="cancelar()">Cancelar</button>
                 </form>
             </div>
-            <div class="resumen-pedido">
-                <p>Tus ultimos pedidos,
-                    <?php echo $_SESSION['nombre'] ?>
-                </p>
+            <div class="pizzas-mas-pedidas">
+
             </div>
+
+
         </div>
     </div>
-    <script src="js/pedido.js"></script>
+    <script src="../js/pedido.js"></script>
 </body>
 
 </html>
