@@ -4,10 +4,10 @@ hidePedido = document.getElementById("hide-pedido");
 
 
 function newPizza() {
-  formPedido = document.getElementById("pizzas-a-pedir");
+  formPedido = document.getElementById("more-pizzas");
 
   let nuevoDiv = document.createElement("div");
-  nuevoDiv.setAttribute("class", "pizzas-pedido");
+  nuevoDiv.setAttribute("class", "pizzas-add-pedido");
 
   let nuevoSelect = document.createElement("select");
   nuevoSelect.setAttribute("name", "pizza[]");
@@ -16,6 +16,7 @@ function newPizza() {
 
   let newLabel = document.createElement("label");
   newLabel.setAttribute("for", "pizza" + optionID);
+  newLabel.innerHTML = "Cantidad";
   nuevoDiv.appendChild(newLabel);
 
   let newInput = document.createElement("input");
@@ -30,7 +31,7 @@ function newPizza() {
 
   let newButton = document.createElement("button");
   newButton.setAttribute("type", "button");
-  newButton.setAttribute("class", "btn btn-danger");
+  newButton.setAttribute("class", "btn-danger");
   newButton.setAttribute("onclick", "deleteRow()");
   newButton.innerHTML = "X";
   nuevoDiv.appendChild(newButton);

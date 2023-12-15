@@ -38,6 +38,7 @@ botonesEditar.forEach(function (boton) {
 });
 
 btnAdd.addEventListener("click", function () {
+  btnAdd.classList.add("hidden");
   clearForm();
   document.getElementById("form-btn").innerText = "Añadir";
   document.getElementById("form-btn").classList.remove("btn-edit");
@@ -47,6 +48,7 @@ btnAdd.addEventListener("click", function () {
 
 function cancelarFormulario() {
   formAdd.classList.add("hidden");
+  btnAdd.classList.remove("hidden");
   clearForm();
 }
 

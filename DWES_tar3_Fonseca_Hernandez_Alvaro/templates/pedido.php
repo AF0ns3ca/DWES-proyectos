@@ -21,23 +21,41 @@ function listarPizzas($conn)
 
 function pizzasMasCompradas($conn)
 {
-    $consulta = $conn->prepare("SELECT p.nombre AS nombre_pizza, COUNT(*) AS cantidad_pedidos
-    FROM pizzas p
-    JOIN pedidos pe ON pe.detalle_pedido LIKE CONCAT('%', p.nombre, '%')
-    GROUP BY p.nombre
-    LIMIT 4");
-
+    $consulta = $conn->prepare("SELECT detalle_pedido FROM pedidos");
     $consulta->execute();
-    echo "<table border='1'>";
-    echo "<tr><th>Pizza</th><th>Cantidad de pedidos</th></tr>";
+    $pizzasMasVendidas = [];
+    $filasMostradas = 0;
+
     foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
-        echo "<tr><td>$row[nombre_pizza]</td><td>$row[cantidad_pedidos]</td></tr>";
+        $detalles = explode(", ", $row["detalle_pedido"]);
+
+        foreach ($detalles as $detalle) {
+            list($nombrePizza, $cantidad) = explode("x", $detalle);
+            if (isset($pizzasMasVendidas[$nombrePizza])) {
+                $pizzasMasVendidas[$nombrePizza] += (int) $cantidad;
+            } else {
+                $pizzasMasVendidas[$nombrePizza] = (int) $cantidad;
+            }
+        }
+    }
+
+    arsort($pizzasMasVendidas);
+    echo "<table class='mas-vendidas' border='1'>";
+    echo "<tr><th>Pizza</th><th>Cantidad de pedidos</th></tr>";
+    foreach ($pizzasMasVendidas as $nombrePizza => $cantidadPedidos) {
+        if ($filasMostradas < 4) {
+            echo "<tr><td>$$nombrePizza</td><td>$cantidadPedidos</td></tr>";
+            $filasMostradas++;
+        } else {
+            break; // Salir del bucle una vez que se han mostrado 4 filas
+        }
     }
     echo "</table>";
 
 }
 
-function ultimosPedidos($conn){
+function ultimosPedidos($conn)
+{
     $consulta = $conn->prepare("SELECT pe.fecha_pedido, pe.detalle_pedido, pe.total
     FROM pedidos pe
     WHERE pe.id_cliente = :id_cliente
@@ -72,6 +90,7 @@ function pedido($conn, $id_cliente, $fecha_pedido, $detalle_pedido, $total)
 }
 
 // Lógica para agregar pedido
+// if (isset($_POST["pizza"]) && $_POST["pizza"] != 0) {
 if (isset($_POST["pizza"]) && isset($_POST["cantidades"])) {
     $id_cliente = $_SESSION["id"];
     $fecha_pedido = date("Y-m-d H:i:s");
@@ -90,7 +109,7 @@ if (isset($_POST["pizza"]) && isset($_POST["cantidades"])) {
             $row = $consulta->fetch(PDO::FETCH_ASSOC);
 
             // Detalle pedido: id_pizza x cantidad
-            $detalle_pedido .= $row["nombre"] . " [" . $cantidades[$key] . " uds], ";
+            $detalle_pedido .= $row["nombre"] . " x " . $cantidades[$key] . " , ";
             $total += $row["precio"] * $cantidades[$key];
         }
 
@@ -103,6 +122,9 @@ if (isset($_POST["pizza"]) && isset($_POST["cantidades"])) {
         echo "Error al procesar pedido.";
     }
 }
+// } else {
+//     echo "Error al procesar pedido.";
+// }
 function cerrarSesion()
 {
     session_unset();
@@ -158,10 +180,10 @@ if (isset($_GET["cerrar_sesion"])) {
                     <h1>Las más famosas</h1>
                     <?php pizzasMasCompradas($conn) ?>
                     <h2>Tus ultimos pedidos,
-                                <?php echo $_SESSION['nombre'] ?>
-                            </h2>
-                            <?php ultimosPedidos($conn) ?>
-                    
+                        <?php echo $_SESSION['nombre'] ?>
+                    </h2>
+                    <?php ultimosPedidos($conn) ?>
+
                 </div>
 
             </div>
@@ -171,12 +193,12 @@ if (isset($_GET["cerrar_sesion"])) {
 
 
             <div class="pedido hide" id="hide-pedido">
-                <form method="POST" id="form-pedido">
-                    <div>
-                        <div id="pizzas-a-pedir">
-                            <div class="pizzas-pedido">
+                <form method="POST" class="form-pedido" id="form-pedido">
+                    <div class="block-pedido">
+                        <div id="more-pizzas">
+                            <div class="pizzas-pedido" id="pizzas-pedido">
                                 <select name="pizza[]" class="select-pizza">
-                                    <option value="0">Seleccione una pizza</option>
+                                    <!-- <option value="0">Seleccione una pizza</option> -->
                                     <?php
                                     $consulta = $conn->prepare("SELECT id, nombre FROM pizzas");
                                     $consulta->execute();
@@ -185,15 +207,14 @@ if (isset($_GET["cerrar_sesion"])) {
                                     }
                                     ?>
                                 </select>
-                                <label for="cantidad"></label>
+                                <label for="cantidad">Cantidad</label>
                                 <input type="number" min="1" value="1" name="cantidades[]">
                             </div>
                         </div>
-
-                        <button type="button" id="add-pizza-pedido">Agregar pizza</button>
+                        <button type="button" class="add-pizza-btn" id="add-pizza-pedido">Agregar pizza</button>
                     </div>
-                    <button action="submit">Añadir a pedido</button>
-                    <button type="button" id="cancel-btn" onclick="cancelar()">Cancelar</button>
+                    <button class="pedido-btn" action="submit">Realizar Pedido</button>
+                    <button type="button" class="cancel-btn" id="cancel-btn" onclick="cancelar()">Cancelar</button>
                 </form>
             </div>
             <div class="pizzas-mas-pedidas">

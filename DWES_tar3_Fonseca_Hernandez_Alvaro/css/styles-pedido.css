@@ -30,7 +30,7 @@ h1 {
   padding: 10px;
 }
 
-nav{
+nav {
   width: 100%;
   padding: 5px;
   background-color: #eebf799d;
@@ -40,12 +40,12 @@ nav{
   align-items: center;
 }
 
-img{
+img {
   width: 75px;
   height: 75px;
 }
 
-nav .header{
+nav .header {
   width: 50%;
   display: flex;
   flex-direction: row;
@@ -54,7 +54,7 @@ nav .header{
   align-items: center;
 }
 
-nav .btns{
+nav .btns {
   width: 50%;
   display: flex;
   flex-direction: row;
@@ -64,7 +64,7 @@ nav .btns{
   align-items: center;
 }
 
-ul{
+ul {
   list-style: none;
   display: flex;
   flex-direction: row;
@@ -99,10 +99,6 @@ th {
   flex-direction: column;
   align-items: center;
   margin: 10px;
-}
-
-.hide {
-  display: none;
 }
 
 button {
@@ -140,7 +136,7 @@ a {
   }
 }
 
-.table-pizzas{
+.table-pizzas {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -148,12 +144,12 @@ a {
   margin: 10px;
 }
 
-.banner{
+.banner {
   width: 100%;
   height: 450px;
 }
 
-.head-admin{
+.head-admin {
   width: 100%;
   margin: 15px;
   display: flex;
@@ -163,15 +159,15 @@ a {
   gap: 10px;
 }
 
-.head-admin:first-child{
+.head-admin:first-child {
   width: 70%;
 }
 
-.head-admin:last-child{
+.head-admin:last-child {
   height: 100%;
 }
 
-.pizzas-a-pedir button{
+.pizzas-a-pedir button {
   width: 100%;
   height: 40px;
   background-color: #2f4b0e;
@@ -180,11 +176,112 @@ a {
   }
 }
 
-.user-stadistic{
+.pedido-btn{
+  width: 100%;
+  height: 40px;
+  background-color: #2f4b0e;
+  &:hover {
+    background-color: #3d6114;
+  }
+}
+
+.user-stadistic {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 10px;
   gap: 10px;
+}
+
+.pedido {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  gap: 10px;
+}
+
+.pedido button {
+  width: 100%;
+  height: 40px;
+}
+
+.add-pizza-btn{
+  width: 100%;
+  height: 40px;
+  color: black;
+  background-color: #eebf79;
+  &:hover {
+    background-color: #eebf799d;;
+  }
+}
+
+.form-pedido{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  gap: 10px;
+}
+
+.block-pedido{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+.pedido option {
+  width: 100%;
+  height: 40px;
+}
+
+.pedido input {
+  width: 100%;
+  height: 40px;
+}
+
+.pizzas-pedido {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 10px;
+  gap: 10px;
+}
+
+.more-pizzas {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+} 
+.pizzas-add-pedido{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 10px;
+  gap: 10px;
+}
+
+.pedido select {
+  width: 100%;
+  height: 40px;
+}
+
+.hide {
+  display: none;
+}
+.btn-danger, .cancel-btn {
+  background-color: #a01005;
+  &:hover {
+    background-color: rgb(255, 53, 53);
+  }
 }
