@@ -60,6 +60,8 @@ function deleteRow() {
 }
 
 btnPedido.addEventListener("click", function () {
+  //hacer que al pulsarlo la pagina se desplace hasta el formulario
+  window.location.href = "#pizzas-pedido";
   hidePedido.classList.toggle("hide");
   btnPedido.classList.toggle("hide");
 });
